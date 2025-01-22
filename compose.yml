@@ -11,15 +11,21 @@ services:
     build:
       context: .
       dockerfile: ./docker/franken/Dockerfile
+    restart: unless-stopped
     ports:
       - "8000:80"
     volumes:
       - ./app:/app
+      - ./docker/franken/data:/data
+      - ./docker/franken/config:/config
+    environment:
+      - SERVER_NAME=franken.7f000001.nip.io
     # command: "tail -f /dev/null"
   app-swoole:
     build:
       context: .
       dockerfile: ./docker/swoole/Dockerfile
+    restart: unless-stopped
     ports:
       - "8001:80"
     volumes:
@@ -29,6 +35,7 @@ services:
     build:
       context: .
       dockerfile: ./docker/roadrunner/Dockerfile
+    restart: unless-stopped
     ports:
       - "8002:8000"
     volumes:
@@ -47,14 +54,18 @@ services:
     build:
       context: .
       dockerfile: ./docker/fpm/Dockerfile
+    restart: unless-stopped
     volumes:
       - ./app:/var/www
 
   db:
     container_name: db
     image: mysql
+    restart: unless-stopped
     environment:
       - MYSQL_ROOT_PASSWORD=wrgs2703
       - MYSQL_USER=admin
       - MYSQL_PASSWORD=wrgs2703
       - MYSQL_DATABASE=laravel
+    volumes:
+      - ./docker/mysql/data:/var/lib/mysql
